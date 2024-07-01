@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import Card from './components/Card'
 
 function App() {
   const [score, setScore] = useState(0);
@@ -12,9 +13,19 @@ function App() {
 
   const fetchPokemonData = async () => {
     try {
-      const response = await fetch('https://pokeapi.co/api/v2/pokemon')
+      const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10');
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
       const data = await response.json();
-      setPokemonData(data);
+
+      const pokemonDetailsPromises = data.results.map(async (pokemon) => {
+        const pokemonResponse = await fetch(pokemon.url);
+        return pokemonResponse.json();
+      });
+
+      const detailedPokemonData = await Promise.all(pokemonDetailsPromises);
+      setPokemonData(detailedPokemonData);
     } catch (error) {
       console.error("Error fetching Pokemon data: ", error);
     }
@@ -43,8 +54,8 @@ function App() {
       </div>
 
       <div id="card-grid">
-        {pokemonData.map((pokemon) => (
-          <Card key={pokemon.id} pokemon={pokemon} onClick={() => handleCardClick(pokemon)} />
+        {pokemonData.map((pokemon, index) => (
+          <Card key={index} pokemon={pokemon} onClick={() => handleCardClick(pokemon)} />
         ))}
       </div>
     </>
