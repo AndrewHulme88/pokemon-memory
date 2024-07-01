@@ -1,10 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [pokemonData, setPokemonData] = useState([]);
+
+  useEffect(() => {
+    fetchPokemonData();
+  }, []);
+
+  const fetchPokemonData = async () => {
+    try {
+      const response = await fetch('https://pokeapi.co/api/v2/pokemon')
+      const data = await response.json();
+      setPokemonData(data);
+    } catch (error) {
+      console.error("Error fetching Pokemon data: ", error);
+    }
+  };
+
+  const handleCardClick = (pokemon) => {
+    setScore((prevScore) => prevScore + 1);
+  };
 
   return (
     <>
@@ -16,17 +34,18 @@ function App() {
         </div>
         <div id="header-right">
           <span>
-            Score:
-            0
+            Score: {score}
           </span>
           <span>
-            High Score:
-            0
+            High Score: {highScore}
           </span>
         </div>
       </div>
-      <div id="card-grid">
 
+      <div id="card-grid">
+        {pokemonData.map((pokemon) => (
+          <Card key={pokemon.id} pokemon={pokemon} onClick={() => handleCardClick(pokemon)} />
+        ))}
       </div>
     </>
   )
