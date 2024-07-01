@@ -6,6 +6,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [pokemonData, setPokemonData] = useState([]);
+  const [displayedPokemon, setDisplayedPokemon] = useState([]);
   const [clickedPokemon, setClickedPokemon] = useState([]);
 
   useEffect(() => {
@@ -14,13 +15,13 @@ function App() {
 
   useEffect(() => {
     if (pokemonData.length > 0) {
-      setPokemonData(shuffleArray(pokemonData));
+      updateDisplayedPokemon();
     }
-  }, [score]);
+  }, [score, pokemonData]);
 
   const fetchPokemonData = async () => {
     try {
-      const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10');
+      const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=150');
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -33,6 +34,7 @@ function App() {
 
       const detailedPokemonData = await Promise.all(pokemonDetailsPromises);
       setPokemonData(detailedPokemonData);
+      setDisplayedPokemon(shuffleArray(detailedPokemonData).slice(0, 10));
     } catch (error) {
       console.error("Error fetching Pokemon data: ", error);
     }
@@ -44,19 +46,25 @@ function App() {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
-    return shuffledArray
-  }
+    return shuffledArray;
+  };
+
+  const updateDisplayedPokemon = () => {
+    setDisplayedPokemon(shuffleArray(pokemonData).slice(0, 10));
+  };
 
   const handleCardClick = (pokemon) => {
     if (clickedPokemon.includes(pokemon.id)) {
       setScore(0);
       setClickedPokemon([]);
     } else {
+      const newScore = score + 1;
       setClickedPokemon([...clickedPokemon, pokemon.id]);
-      setScore(score + 1);
-      if (score + 1 > highScore) {
-        setHighScore(score + 1);
+      setScore(newScore);
+      if (newScore > highScore) {
+        setHighScore(newScore);
       }
+      updateDisplayedPokemon();
     }
   };
 
@@ -79,12 +87,12 @@ function App() {
       </div>
 
       <div id="card-grid">
-        {pokemonData.map((pokemon, index) => (
+        {displayedPokemon.map((pokemon, index) => (
           <Card key={index} pokemon={pokemon} onClick={() => handleCardClick(pokemon)} />
         ))}
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
