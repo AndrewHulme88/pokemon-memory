@@ -6,10 +6,17 @@ function App() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [pokemonData, setPokemonData] = useState([]);
+  const [clickedPokemon, setClickedPokemon] = useState([]);
 
   useEffect(() => {
     fetchPokemonData();
   }, []);
+
+  useEffect(() => {
+    if (pokemonData.length > 0) {
+      setPokemonData(shuffleArray(pokemonData));
+    }
+  }, [score]);
 
   const fetchPokemonData = async () => {
     try {
@@ -31,8 +38,26 @@ function App() {
     }
   };
 
+  const shuffleArray = (array) => {
+    let shuffledArray = array.slice();
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    }
+    return shuffledArray
+  }
+
   const handleCardClick = (pokemon) => {
-    setScore((prevScore) => prevScore + 1);
+    if (clickedPokemon.includes(pokemon.id)) {
+      setScore(0);
+      setClickedPokemon([]);
+    } else {
+      setClickedPokemon([...clickedPokemon, pokemon.id]);
+      setScore(score + 1);
+      if (score + 1 > highScore) {
+        setHighScore(score + 1);
+      }
+    }
   };
 
   return (
