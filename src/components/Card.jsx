@@ -5,7 +5,8 @@ const Card = ({ pokemon, onClick }) => {
 
   return (
     <div className="card" onClick={onClick}>
-      <img src={imageUrl || 'placeholder.jpg'} alt={pokemon.name} />
+      <div className="card-background"></div>
+      <img className='pokemon-image' src={imageUrl || 'placeholder.jpg'} alt={pokemon.name} />
       <p>{pokemon.name}</p>
     </div>
   );
