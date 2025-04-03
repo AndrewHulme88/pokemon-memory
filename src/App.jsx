@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header';
@@ -9,7 +8,6 @@ const App = () => {
   const [highScore, setHighScore] = useState(0);
   const [pokemonData, setPokemonData] = useState([]);
   const [displayedPokemon, setDisplayedPokemon] = useState([]);
-  const [clickedPokemon, setClickedPokemon] = useState([]);
 
   useEffect(() => {
     fetchPokemonData();
@@ -46,7 +44,7 @@ const App = () => {
     let shuffledArray = array.slice();
     for (let i = shuffledArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+      [shuffledArray[i], shuffldArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
     return shuffledArray;
   };
